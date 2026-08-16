@@ -1,34 +1,43 @@
-using Microsoft.EntityFrameworkCore;
 using RestaurantReservation.API.DTOs;
-using RestaurantReservation.Db.Context;
 using RestaurantReservation.Db.Entities;
+using RestaurantReservation.Db.Repositories;
 
 namespace RestaurantReservation.API.Services;
 
 public class ReservationService : IReservationService
 {
-    private readonly RestaurantReservationDbContext _context;
+    private readonly IReservationRepository _reservationRepository;
 
-    public ReservationService(RestaurantReservationDbContext context)
+    public ReservationService(IReservationRepository reservationRepository)
     {
-        _context = context;
+        _reservationRepository = reservationRepository;
     }
 
     public async Task<IEnumerable<ReservationResponseDto>> GetAllAsync()
     {
-        return await _context.Reservations
-            .Select(r => new ReservationResponseDto(
-                r.ReservationId, r.CustomerId, r.RestaurantId, r.TableId, r.ReservationDate, r.PartySize))
-            .ToListAsync();
+        var reservations = await _reservationRepository.GetAllAsync();
+
+        return reservations.Select(r => new ReservationResponseDto(
+            r.ReservationId, 
+            r.CustomerId, 
+            r.RestaurantId, 
+            r.TableId, 
+            r.ReservationDate, 
+            r.PartySize));
     }
 
     public async Task<ReservationResponseDto?> GetByIdAsync(int id)
     {
-        var r = await _context.Reservations.FindAsync(id);
+        var r = await _reservationRepository.GetByIdAsync(id);
         if (r is null) return null;
 
         return new ReservationResponseDto(
-            r.ReservationId, r.CustomerId, r.RestaurantId, r.TableId, r.ReservationDate, r.PartySize);
+            r.ReservationId, 
+            r.CustomerId, 
+            r.RestaurantId, 
+            r.TableId, 
+            r.ReservationDate, 
+            r.PartySize);
     }
 
     public async Task<ReservationResponseDto> CreateAsync(ReservationCreateDto dto)
@@ -42,33 +51,35 @@ public class ReservationService : IReservationService
             PartySize = dto.PartySize
         };
 
-        _context.Reservations.Add(reservation);
-        await _context.SaveChangesAsync();
+        await _reservationRepository.CreateAsync(reservation);
 
         return new ReservationResponseDto(
-            reservation.ReservationId, reservation.CustomerId, reservation.RestaurantId, 
-            reservation.TableId, reservation.ReservationDate, reservation.PartySize);
+            reservation.ReservationId, 
+            reservation.CustomerId, 
+            reservation.RestaurantId, 
+            reservation.TableId, 
+            reservation.ReservationDate, 
+            reservation.PartySize);
     }
 
     public async Task<bool> UpdateAsync(int id, ReservationUpdateDto dto)
     {
-        var reservation = await _context.Reservations.FindAsync(id);
+        var reservation = await _reservationRepository.GetByIdAsync(id);
         if (reservation is null) return false;
 
         reservation.ReservationDate = dto.ReservationDate;
         reservation.PartySize = dto.PartySize;
 
-        await _context.SaveChangesAsync();
+        await _reservationRepository.UpdateAsync(reservation);
         return true;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var reservation = await _context.Reservations.FindAsync(id);
+        var reservation = await _reservationRepository.GetByIdAsync(id);
         if (reservation is null) return false;
 
-        _context.Reservations.Remove(reservation);
-        await _context.SaveChangesAsync();
+        await _reservationRepository.DeleteAsync(id);
         return true;
     }
 }

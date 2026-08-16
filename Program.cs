@@ -8,6 +8,7 @@ builder.Services.AddDbContext<RestaurantReservationDbContext>(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 var app = builder.Build();
 
