@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RestaurantReservation.Db.Context;
-
+using RestaurantReservation.API.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<RestaurantReservationDbContext>(options =>
@@ -8,7 +8,7 @@ builder.Services.AddDbContext<RestaurantReservationDbContext>(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddScoped<IReservationService, ReservationService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
