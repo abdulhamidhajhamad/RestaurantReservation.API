@@ -10,6 +10,7 @@ using RestaurantReservation.API.Services.Auth;
 using RestaurantReservation.Db.Context;
 using RestaurantReservation.Db.Repositories; 
 using RestaurantReservation.API.Services.Reservations;
+using FluentValidation;
 
 Env.Load();
 
@@ -19,6 +20,9 @@ builder.Services.AddDbContext<RestaurantReservationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddProblemDetails();
+
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -29,7 +33,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "بس حط الـ Token هون، مش لازم تكتب كلمة Bearer قبله"
+        Description = ""
     });
 
     options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
@@ -91,6 +95,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
+app.UseStatusCodePages();
 app.UseAuthentication();
 app.UseAuthorization();
 
