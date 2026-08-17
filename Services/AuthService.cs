@@ -6,10 +6,12 @@ namespace RestaurantReservation.API.Services;
 public class AuthService : IAuthService
 {
     private readonly IEmployeeRepository _employeeRepository;
-    public AuthService(IEmployeeRepository employeeRepository)
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
+    public AuthService(IEmployeeRepository employeeRepository,
+        IJwtTokenGenerator  jwtTokenGenerator)
     {
         _employeeRepository = employeeRepository;
-        
+        _jwtTokenGenerator = jwtTokenGenerator;
     }
 
     public async Task<string?> LoginAsync(string employeeName)
@@ -19,7 +21,6 @@ public class AuthService : IAuthService
         {
             return null;
         }
-        return "SUCCESS_MANAGER_FOUND";
-        
+        return _jwtTokenGenerator.GenerateToken(employee);        
     }
 }
