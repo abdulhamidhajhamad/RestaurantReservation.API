@@ -1,4 +1,4 @@
-namespace RestaurantReservation.API.Services.Interfaces;
+namespace RestaurantReservation.API.Services.Auth;
 public interface IAuth
 {
     Task<string?> LoginAsync(string employeeName);

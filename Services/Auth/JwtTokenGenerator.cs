@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using RestaurantReservation.Db.Entities;
 
-namespace RestaurantReservation.API.Services.Interfaces;
+namespace RestaurantReservation.API.Services.Auth;
 
 public class JwtTokenGenerator : IJwtTokenGenerator
 {

@@ -1,7 +1,7 @@
 using RestaurantReservation.Db.Repositories; 
 using RestaurantReservation.Db.Entities;     
 
-namespace RestaurantReservation.API.Services.Interfaces;
+namespace RestaurantReservation.API.Services.Auth;
 
 public class AuthService : IAuth
 {

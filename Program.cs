@@ -1,31 +1,40 @@
-using Microsoft.EntityFrameworkCore;
-using RestaurantReservation.Db.Context;
-using RestaurantReservation.API.Services.Interfaces;
-using RestaurantReservation.API.Services.Reservations;
-using RestaurantReservation.Db.Repositories;
-using RestaurantReservation.API.Endpoints; 
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using DotNetEnv;
+using RestaurantReservation.API.Endpoints;
 
-var builder = WebApplication.CreateBuilder(args);
+Env.Load();
 
-builder.Services.AddDbContext<RestaurantReservationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+var builder = WebApplication.CreateBuilder(System.Environment.GetCommandLineArgs());
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
-builder.Services.AddScoped<IReservationService, ReservationService>();
-builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        var secretKey = Environment.GetEnvironmentVariable("JWT_KEY") 
+                        ?? throw new InvalidOperationException("JWT_KEY missing.");
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
+            ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();  
-
-app.MapGet("/", () => "API Ready!");
-
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapAuthEndpoints();
 app.MapReservationEndpoints();
-app.Run();
