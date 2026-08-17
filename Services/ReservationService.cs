@@ -15,7 +15,7 @@ public class ReservationService : IReservationService
 
     public async Task<IEnumerable<ReservationResponseDto>> GetAllAsync()
     {
-        var reservations = await _reservationRepository.GetAllAsync();
+        var reservations = await _reservationRepository.GetAllReservations();
 
         return reservations.Select(r => new ReservationResponseDto(
             r.ReservationId, 
@@ -28,7 +28,7 @@ public class ReservationService : IReservationService
 
     public async Task<ReservationResponseDto?> GetByIdAsync(int id)
     {
-        var r = await _reservationRepository.GetByIdAsync(id);
+        var r = await _reservationRepository.GetReservationById(id);
         if (r is null) return null;
 
         return new ReservationResponseDto(
@@ -51,7 +51,7 @@ public class ReservationService : IReservationService
             PartySize = dto.PartySize
         };
 
-        await _reservationRepository.CreateAsync(reservation);
+        await _reservationRepository.CreateReservation(reservation);
 
         return new ReservationResponseDto(
             reservation.ReservationId, 
@@ -64,22 +64,22 @@ public class ReservationService : IReservationService
 
     public async Task<bool> UpdateAsync(int id, ReservationUpdateDto dto)
     {
-        var reservation = await _reservationRepository.GetByIdAsync(id);
+        var reservation = await _reservationRepository.GetReservationById(id);
         if (reservation is null) return false;
 
         reservation.ReservationDate = dto.ReservationDate;
         reservation.PartySize = dto.PartySize;
 
-        await _reservationRepository.UpdateAsync(reservation);
+        await _reservationRepository.UpdateReservation(reservation);
         return true;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var reservation = await _reservationRepository.GetByIdAsync(id);
+        var reservation = await _reservationRepository.GetReservationById(id);
         if (reservation is null) return false;
 
-        await _reservationRepository.DeleteAsync(id);
+        await _reservationRepository.DeleteReservation(id);
         return true;
     }
 }
