@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.2.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.83.0" />
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.83.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
@@ -23,5 +25,9 @@
   <ItemGroup>
     <ProjectReference Include="..\RestaurantReservation\RestaurantReservation\RestaurantReservation.Db\RestaurantReservation.Db.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <Protobuf Include="Protos\reservation.proto" GrpcServices="Server" />
+  </ItemGroup>
+  
 </Project>

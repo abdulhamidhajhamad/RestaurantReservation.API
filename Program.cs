@@ -12,10 +12,20 @@ using RestaurantReservation.Db.Repositories;
 using RestaurantReservation.API.Services.Reservations;
 using FluentValidation;
 using RestaurantReservation.API.Services.Employees;
+using RestaurantReservation.API.Services;
 
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(System.Environment.GetCommandLineArgs());
+
+// ضبط Kestrel ليدعم HTTP/1 و HTTP/2 لخدمات gRPC
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ConfigureEndpointDefaults(listenOptions =>
+    {
+        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+    });
+});
 
 builder.Services.AddDbContext<RestaurantReservationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -24,6 +34,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+// 1. تسجيل خدمات gRPC والـ Reflection
+builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -95,6 +109,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
+    // تفعيل gRPC Reflection
+    app.MapGrpcReflectionService();
 }
 
 app.UseExceptionHandler();
@@ -105,5 +122,7 @@ app.UseAuthorization();
 app.MapAuthEndpoints();
 app.MapReservationEndpoints();
 app.MapEmployeeEndpoints();
+
+app.MapGrpcService<ReservationGrpcService>();
 
 app.Run();
