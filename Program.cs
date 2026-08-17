@@ -11,6 +11,7 @@ using RestaurantReservation.Db.Context;
 using RestaurantReservation.Db.Repositories; 
 using RestaurantReservation.API.Services.Reservations;
 using FluentValidation;
+using RestaurantReservation.API.Services.Employees;
 
 Env.Load();
 
@@ -47,6 +48,7 @@ builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuth, AuthService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -102,5 +104,6 @@ app.UseAuthorization();
 
 app.MapAuthEndpoints();
 app.MapReservationEndpoints();
+app.MapEmployeeEndpoints();
 
 app.Run();

@@ -13,34 +13,17 @@ public class ReservationService : IReservationService
         _reservationRepository = reservationRepository;
     }
 
-    public async Task<IEnumerable<ReservationResponseDto>> GetAllAsync()
+    public async Task<IEnumerable<Reservation>> GetAllAsync()
     {
-        var reservations = await _reservationRepository.GetAllReservations();
-
-        return reservations.Select(r => new ReservationResponseDto(
-            r.ReservationId, 
-            r.CustomerId, 
-            r.RestaurantId, 
-            r.TableId, 
-            r.ReservationDate, 
-            r.PartySize));
+        return await _reservationRepository.GetAllReservations();
     }
 
-    public async Task<ReservationResponseDto?> GetByIdAsync(int id)
+    public async Task<Reservation?> GetByIdAsync(int id)
     {
-        var r = await _reservationRepository.GetReservationById(id);
-        if (r is null) return null;
-
-        return new ReservationResponseDto(
-            r.ReservationId, 
-            r.CustomerId, 
-            r.RestaurantId, 
-            r.TableId, 
-            r.ReservationDate, 
-            r.PartySize);
+        return await _reservationRepository.GetReservationById(id);
     }
 
-    public async Task<ReservationResponseDto> CreateAsync(ReservationCreateDto dto)
+    public async Task<Reservation> CreateAsync(ReservationCreateDto dto)
     {
         var reservation = new Reservation
         {
@@ -52,34 +35,68 @@ public class ReservationService : IReservationService
         };
 
         await _reservationRepository.CreateReservation(reservation);
-
-        return new ReservationResponseDto(
-            reservation.ReservationId, 
-            reservation.CustomerId, 
-            reservation.RestaurantId, 
-            reservation.TableId, 
-            reservation.ReservationDate, 
-            reservation.PartySize);
+        return reservation;
     }
 
     public async Task<bool> UpdateAsync(int id, ReservationUpdateDto dto)
     {
-        var reservation = await _reservationRepository.GetReservationById(id);
-        if (reservation is null) return false;
+        var existing = await _reservationRepository.GetReservationById(id);
+        if (existing is null) return false;
 
-        reservation.ReservationDate = dto.ReservationDate;
-        reservation.PartySize = dto.PartySize;
+        existing.ReservationDate = dto.ReservationDate;
+        existing.PartySize = dto.PartySize;
 
-        await _reservationRepository.UpdateReservation(reservation);
+        await _reservationRepository.UpdateReservation(existing);
         return true;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var reservation = await _reservationRepository.GetReservationById(id);
-        if (reservation is null) return false;
+        var existing = await _reservationRepository.GetReservationById(id);
+        if (existing is null) return false;
 
         await _reservationRepository.DeleteReservation(id);
         return true;
+    }
+
+    public async Task<IEnumerable<Reservation>> GetReservationsByCustomerAsync(int customerId)
+    {
+        return await _reservationRepository.GetReservationsByCustomer(customerId);
+    }
+
+    public async Task<IEnumerable<OrderResponseDto>?> GetOrdersByReservationAsync(int reservationId)
+    {
+        var reservation = await _reservationRepository.GetReservationById(reservationId);
+        if (reservation is null) return null;
+
+        var orders = await _reservationRepository.ListOrdersAndMenuItems(reservationId);
+    
+        return orders.Select(o => new OrderResponseDto(
+            o.OrderId,
+            o.ReservationId,
+            o.EmployeeId,
+            o.OrderDate,
+            o.TotalAmount
+        ));
+    }
+
+    public async Task<IEnumerable<MenuItemResponseDto>?> GetMenuItemsByReservationAsync(int reservationId)
+    {
+        var reservation = await _reservationRepository.GetReservationById(reservationId);
+        if (reservation is null) return null;
+
+        var orders = await _reservationRepository.ListOrdersAndMenuItems(reservationId);
+
+        return orders
+            .SelectMany(o => o.OrderItems)
+            .Select(oi => oi.MenuItem)
+            .Where(mi => mi is not null)
+            .Select(mi => new MenuItemResponseDto(
+                mi.ItemId,
+                mi.RestaurantId,
+                mi.Name,
+                mi.Description,
+                mi.Price
+            ));
     }
 }

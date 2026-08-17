@@ -2,8 +2,9 @@ namespace RestaurantReservation.API.DTOs;
 
 public record MenuItemResponseDto(
     int MenuItemId,
+    int RestaurantId,
     string Name,
-    string? Description,
+    string Description,
     decimal Price
 );
 
