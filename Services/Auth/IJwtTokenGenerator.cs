@@ -1,6 +1,6 @@
 using RestaurantReservation.Db.Entities;
 
-namespace RestaurantReservation.API.Authentication;
+namespace RestaurantReservation.API.Services.Interfaces;
 
 public interface IJwtTokenGenerator
 {

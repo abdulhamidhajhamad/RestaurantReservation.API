@@ -2,7 +2,7 @@ using RestaurantReservation.API.DTOs;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Repositories;
 
-namespace RestaurantReservation.API.Services;
+namespace RestaurantReservation.API.Services.Reservations;
 
 public class ReservationService : IReservationService
 {

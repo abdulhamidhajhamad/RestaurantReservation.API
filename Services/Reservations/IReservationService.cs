@@ -1,6 +1,6 @@
 using RestaurantReservation.API.DTOs;
 
-namespace RestaurantReservation.API.Services;
+namespace RestaurantReservation.API.Services.Reservations;
 
 public interface IReservationService
 {

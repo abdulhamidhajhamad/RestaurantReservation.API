@@ -1,5 +1,5 @@
 using RestaurantReservation.API.DTOs;
-using RestaurantReservation.API.Services;
+using RestaurantReservation.API.Services.Reservations;
 
 namespace RestaurantReservation.API.Endpoints;
 

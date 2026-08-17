@@ -1,9 +1,9 @@
 using RestaurantReservation.Db.Repositories; 
 using RestaurantReservation.Db.Entities;     
 
-namespace RestaurantReservation.API.Services;
+namespace RestaurantReservation.API.Services.Interfaces;
 
-public class AuthService : IAuthService
+public class AuthService : IAuth
 {
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;

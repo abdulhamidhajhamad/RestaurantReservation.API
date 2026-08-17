@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RestaurantReservation.Db.Context;
-using RestaurantReservation.API.Services;
+using RestaurantReservation.API.Services.Interfaces;
+using RestaurantReservation.API.Services.Reservations;
 using RestaurantReservation.Db.Repositories;
 using RestaurantReservation.API.Endpoints; 
 
