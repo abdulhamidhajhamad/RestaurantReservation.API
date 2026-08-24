@@ -7,6 +7,7 @@ public static class EmployeeEndpoints
 {
     public static void MapEmployeeEndpoints(this IEndpointRouteBuilder app)
     {
+        
         var group = app.MapGroup("/api/employees")
             .WithTags("Employees")
             .RequireAuthorization(policy => policy.RequireRole("Manager"));

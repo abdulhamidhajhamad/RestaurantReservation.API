@@ -20,7 +20,9 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         {
             new Claim(ClaimTypes.NameIdentifier, employee.EmployeeId.ToString()),
             new Claim(ClaimTypes.Name, $"{employee.FirstName} {employee.LastName}"),
-            new Claim(ClaimTypes.Role, employee.Position)
+            new Claim(ClaimTypes.Role, employee.Position),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));

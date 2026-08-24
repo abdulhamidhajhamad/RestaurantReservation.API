@@ -12,7 +12,6 @@ public static class ReservationEndpoints
         var group = app.MapGroup("/api/reservations")
                        .WithTags("Reservations");
 
-        // --- CRUD Endpoints ---
 
         group.MapGet("/", async (IReservationService reservationService) =>
         {
@@ -89,7 +88,7 @@ public static class ReservationEndpoints
         .Produces(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status404NotFound);
 
-        // --- Additional Minimal APIs (Item 4) ---
+        //------
 
         group.MapGet("/customer/{customerId:int}", async (int customerId, IReservationService reservationService) =>
         {
